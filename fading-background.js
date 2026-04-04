@@ -7,14 +7,12 @@
  * or digital products for sale without written permission from Unmilaya Studio.
  *
  * Requires: GSAP + ScrollTrigger (loaded separately)
- * Install:  Paste the <script> tag into Settings > Advanced > Code Injection > Footer
+ * Install:  Paste the <script> tags into Settings > Advanced > Code Injection > Footer
  */
 
 (function () {
   "use strict";
 
-  // How many px before the section reaches the top of the viewport
-  // the crossfade begins. Increase for a longer, more gradual dissolve.
   var START_DISTANCE = 200;
 
   function init() {
@@ -27,21 +25,15 @@
 
     var sections = document.querySelectorAll(".page-section");
 
-    if (!sections.length) {
-      console.warn("Unmilaya Fading Background: no .page-section elements found.");
-      return;
-    }
+    if (!sections.length) return;
 
-    // Keep footer above fixed background layers
-    gsap.set("footer", { zIndex: 999 });
+    gsap.set("footer", { zIndex: 999, position: "relative" });
 
     sections.forEach(function (section, index) {
 
       var bg = section.querySelector(".section-background");
-
       if (!bg) return;
 
-      // Make each section background a fixed full-screen layer
       gsap.set(bg, {
         position: "fixed",
         top: 0,
@@ -53,16 +45,14 @@
         zIndex: 5 + index,
       });
 
-      // Lift section content above background layers
-      var overlay = section.querySelector(".section-background-overlay");
-      if (overlay) {
-        gsap.set(overlay, { zIndex: 50 + index });
+      var content = section.querySelector(".content-wrapper");
+      if (content) {
+        content.style.position = "relative";
+        content.style.zIndex = 200;
       }
 
-      // First section is already visible
       if (index === 0) return;
 
-      // Fade each subsequent background in as it scrolls into view
       ScrollTrigger.create({
         trigger: section,
         start: "top-=" + START_DISTANCE + "px top",
@@ -73,7 +63,6 @@
 
     });
 
-    // Recalculate on resize
     window.addEventListener("resize", function () {
       ScrollTrigger.refresh();
     });
